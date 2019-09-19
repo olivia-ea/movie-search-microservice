@@ -65,14 +65,14 @@ Open localhost:5000 on browser.
 * The functions hit the following endpoints:
     * /movies/<title>
     * /movies/search/<title>
-    * /movies/search/?<title>&<year>
+    * /movies/search/<title>/<year>
 * When each endpoint is hit, a get request makes API call to the OMBD API. The return statement then parses through the json to give the desired format.
 
 | URL      | HTTP Request Type     | Action     | Output     |
 | :------------- | :---------- | :---------- | :----------- |
 |  /movies/<title> | GET   | Given a movie title, this endpoint returns all the movie results with an exact title match.     | Returns the movie title, shortened plot summary, year released, runtime and genre.   |
 |  /movies/search/<title> | GET   | Given a partial movie title, this endpoint returns all the movie results with a partial title match.    | Returns the movie title and year released.    |
-|  /movies/search/?<title>&<year> | GET   | Given a partial movie title and year, this endpoint returns all the movie results with a partial title match and exact year match.     | Returns the movie title and year released.    \|
+|  /movies/search/<title>/<year> | GET   | Given a partial movie title and year, this endpoint returns all the movie results with a partial title match and exact year match.     | Returns the movie title and year released.    \|
 
 ### testing.py
 * Contains unit testing for above files. There is an individual function to test each endpoint using assert statements. The valid id tests are checking for a 200 status code and if a response is present whereas the invalid id tests are checking for a 500 status code.

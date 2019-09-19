@@ -49,11 +49,11 @@ def fetch_all_movies_by_title(title):
         return movie_response, 500
 
 # http://localhost:5000/movies/search/?title=jurassic+park&year=1993
-@app.route('/movies/search/', methods=['GET'])
-def fetch_all_movies_by_title_and_year():
-    title = request.args.get('title')
-    title = title.replace(" ", "+")
-    year = request.args.get('year')
+@app.route('/movies/search/<title>/<year>', methods=['GET'])
+def fetch_all_movies_by_title_and_year(title, year):
+    # title = request.args.get('title')
+    # title = title.replace(" ", "+")
+    # year = request.args.get('year')
     api_call_url = BASE_URL + "s=" + title + "&y=" + year + "&type=movie&apikey=" + MOVIE_API_KEY
     response_data = requests.get(api_call_url)
     json_data = response_data.json()
