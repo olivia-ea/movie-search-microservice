@@ -33,8 +33,6 @@ def fetch_all_movies_by_title(title):
     response_data = requests.get(api_call_url)
     json_data = response_data.json()
 
-    # TODO for testing check if array length is > 0
-
     if json_data["Response"] == "True":
         movie_results = {'Results': []}
         for movie in json_data['Search']:
