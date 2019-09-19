@@ -1,6 +1,8 @@
+from helperfuncs import *
 from flask import Flask, request
 import requests
 import os
+
 
 MOVIE_API_KEY = os.environ['MOVIE_API_KEY']
 BASE_URL = 'http://www.omdbapi.com/?'
@@ -32,7 +34,6 @@ def fetch_all_movies_by_title(title):
     api_call_url = BASE_URL + "s=" + title + "&type=movie&apikey=" + MOVIE_API_KEY
     response_data = requests.get(api_call_url)
     json_data = response_data.json()
-
     if json_data["Response"] == "True":
         movie_results = {'Results': []}
         for movie in json_data['Search']:
@@ -49,25 +50,26 @@ def fetch_all_movies_by_title(title):
 # http://localhost:5000/movies/search/?title=jurassic+park&year=1993
 @app.route('/movies/search/<title>/<year>', methods=['GET'])
 def fetch_all_movies_by_title_and_year(title, year):
-    # title = request.args.get('title')
-    # title = title.replace(" ", "+")
-    # year = request.args.get('year')
-    api_call_url = BASE_URL + "s=" + title + "&y=" + year + "&type=movie&apikey=" + MOVIE_API_KEY
-    response_data = requests.get(api_call_url)
-    json_data = response_data.json()
-
-    if json_data["Response"] == "True":
-        movie_results = {'Results': []}
-        for movie in json_data['Search']:
+    if title.isspace():
+        title = strip_whitespace_from_title(title)
+    if is_valid_year(year):
+        api_call_url = BASE_URL + "s=" + title + "&y=" + year + "&type=movie&apikey=" + MOVIE_API_KEY
+        response_data = requests.get(api_call_url)
+        json_data = response_data.json()
+        if json_data["Response"] == "True":
+            movie_results = {'Results': []}
+            for movie in json_data['Search']:
+                movie_response = {}
+                movie_response["title"] = movie["Title"]
+                movie_response["year_released"] = movie["Year"]
+                movie_results['Results'].append(movie_response)
+            return movie_results, 200
+        else:
             movie_response = {}
-            movie_response["title"] = movie["Title"]
-            movie_response["year_released"] = movie["Year"]
-            movie_results['Results'].append(movie_response)
-        return movie_results, 200
+            movie_response["Error"] = json_data["Error"]
+            return movie_response, 500
     else:
-        movie_response = {}
-        movie_response["Error"] = json_data["Error"]
-        return movie_response, 500
+        return('Not a valid year!'), 400
 
 if __name__ == "__main__":
     app.debug = True
