@@ -12,7 +12,6 @@ app.debug = True
 @app.route('/movies/<title>', methods=['GET'])
 def fetch_movies_using_exact_title_search(title):
     api_call_url = BASE_URL + "t=" + title + "&type=movie&plot=short&apikey=" + MOVIE_API_KEY
-    print(api_call_url)
     response_data = requests.get(api_call_url)
     json_data = response_data.json()
     movie_response = {}
@@ -33,17 +32,21 @@ def fetch_all_movies_by_title(title):
     api_call_url = BASE_URL + "s=" + title + "&type=movie&apikey=" + MOVIE_API_KEY
     response_data = requests.get(api_call_url)
     json_data = response_data.json()
-    movie_results = {'Results': []}
 
     # TODO for testing check if array length is > 0
 
-
-    for movie in json_data['Search']:
+    if json_data["Response"] == "True":
+        movie_results = {'Results': []}
+        for movie in json_data['Search']:
+            movie_response = {}
+            movie_response["title"] = movie["Title"]
+            movie_response["year_released"] = movie["Year"]
+            movie_results['Results'].append(movie_response)
+        return movie_results, 200
+    else:
         movie_response = {}
-        movie_response["title"] = movie["Title"]
-        movie_response["year_released"] = movie["Year"]
-        movie_results['Results'].append(movie_response)
-    return movie_results
+        movie_response["Error"] = json_data["Error"]
+        return movie_response, 500
 
 # http://localhost:5000/movies/search/?title=jurassic+park&year=1993
 @app.route('/movies/search/', methods=['GET'])
@@ -54,13 +57,19 @@ def fetch_all_movies_by_title_and_year():
     api_call_url = BASE_URL + "s=" + title + "&y=" + year + "&type=movie&apikey=" + MOVIE_API_KEY
     response_data = requests.get(api_call_url)
     json_data = response_data.json()
-    movie_results = {'Results': []}
-    for movie in json_data['Search']:
+
+    if json_data["Response"] == "True":
+        movie_results = {'Results': []}
+        for movie in json_data['Search']:
+            movie_response = {}
+            movie_response["title"] = movie["Title"]
+            movie_response["year_released"] = movie["Year"]
+            movie_results['Results'].append(movie_response)
+        return movie_results, 200
+    else:
         movie_response = {}
-        movie_response["title"] = movie["Title"]
-        movie_response["year_released"] = movie["Year"]
-        movie_results['Results'].append(movie_response)
-    return movie_results
+        movie_response["Error"] = json_data["Error"]
+        return movie_response, 500
 
 if __name__ == "__main__":
     app.debug = True
